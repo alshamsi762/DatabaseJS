@@ -5,11 +5,11 @@ var image = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEBAP
 var database = firebase.database();
 var listReports = "did not update";
 console.log(database);
-removeReport("-LOsKCzLPInoj9fBx25v")
+//removeReport("-LOsKCzLPInoj9fBx25v")
 
-//writeNewReport(1,image,"traffic","thisisadescription", 44.7,-90.1)
+//writeNewReport(1,image,"Pothole","thisisadescription", 44.7,-90.1)
 
-console.log(readAllReports(callback1));
+//console.log(readAllReportsSorted(callback1,"reportType","sideWalk"));
 // console.log(snapshot.val())
 
 //Reads All the reports on the database Expects a callback function as argument
@@ -30,15 +30,39 @@ function callback1(reportsObject){
 console.log(reportsObject)
 }
 
+async function readAllReportsSorted(callbackFunction,sort,filter){
+  if(filter != ""){
+    var reports = firebase.database().ref('reports').orderByChild(sort).equalTo(filter);
+  }else {
+    var reports = firebase.database().ref('reports').orderByChild(sort);
+  }
+  reports.once('value').then(function(snapshot) {
+    //console.log(snapshot.val());
+     listReports = snapshot.val();
+     console.log("Reports are read")
+     callbackFunction(snapshot.val());
+  });
+  var snapshot = await reports.once("value")
+  return(snapshot.val());
+}
+
+//callback function example
+function callback1(reportsObject){
+console.log(reportsObject)
+}
+
 //Creates a new report and addes it to the database
 function writeNewReport(reportId, pictures, reportType, description,lat,long) {
   // A report entry.
+  var d = new Date();
   var postData = {
     reportId: reportId,
     reportType: reportType,
     location: [lat,long],
     description:description,
-    pictures: pictures
+    pictures: pictures,
+    status:"submitted",
+    date:d
   };
 
   // Get a key for a new report.
