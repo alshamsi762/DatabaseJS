@@ -13,6 +13,7 @@ console.log(database);
 // console.log(snapshot.val())
 
 //Reads All the reports on the database Expects a callback function as argument
+//the function calls the callback function and passes the all the reports
 async function readAllReports(callbackFunction){
   var reports = firebase.database().ref('reports');
   reports.once('value').then(function(snapshot) {
@@ -30,6 +31,16 @@ function callback1(reportsObject){
 console.log(reportsObject)
 }
 
+//Reads the reports on the database
+//Expects:
+//          a callback function as argument
+//          Sort Argument such as date ,status (note location and other fields
+//          such as pictures are sorted based on string)
+//          Filter could be passed by passing eg ("submitted")
+//          the filter will only filter by sorted category
+//          for example sort "status" then filter "submitted" only
+//the function calls the callback function and passes the all the reports
+//matching the given arguments
 async function readAllReportsSorted(callbackFunction,sort,filter){
   if(filter != ""){
     var reports = firebase.database().ref('reports').orderByChild(sort).equalTo(filter);
